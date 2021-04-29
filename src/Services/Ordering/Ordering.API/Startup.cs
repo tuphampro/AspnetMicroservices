@@ -40,7 +40,8 @@ namespace Ordering.API
             services.AddMassTransitHostedService();
             services.AddAutoMapper(typeof(Startup));
             services.AddScoped<BasketCheckoutConsumer>();
-            
+            ConfigIdentity(services);
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -67,6 +68,23 @@ namespace Ordering.API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+            });
+        }
+        private void ConfigIdentity(IServiceCollection services)
+        {
+            var identityUrl = Configuration.GetValue<string>("IdentityUrl");
+
+            // Add Authentication services
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme;
+
+            }).AddJwtBearer(options =>
+            {
+                options.Authority = identityUrl;
+                options.RequireHttpsMetadata = false;
+                options.Audience = "basket";
             });
         }
     }

@@ -49,10 +49,33 @@ services:
       context: .
       dockerfile: Services/Ordering/Ordering.API/Dockerfile
 
+  ocelotapigw:
+    image: ${DOCKER_REGISTRY-}ocelotapigw
+    build:
+      context: .
+      dockerfile: APIGateways/OcelotApiGw/Dockerfile
+
+  shopping.aggregation:
+    image: ${DOCKER_REGISTRY-}shoppingaggregation
+    build:
+      context: .
+      dockerfile: APIGateways/Shopping.Aggregation/Dockerfile
+
+  indentity.api:
+    image: ${DOCKER_REGISTRY-}indentityapi
+    build:
+      context: .
+      dockerfile: Services/Indentity/Indentity.API/Dockerfile
+
 volumes:
   mongo_data:
   postgres_data:
   pgadmin_data:
+
+
+
+
+
 
 
 
