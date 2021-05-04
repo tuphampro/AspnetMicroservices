@@ -75,7 +75,7 @@ namespace Basket.API
 
         private void ConfigIdentity(IServiceCollection services)
         {
-            var identityUrl = Configuration.GetValue<string>("IdentityUrl");
+            var identityUrl = Configuration["IdentityUrl"];
 
             // Add Authentication services
             services.AddAuthentication(options =>

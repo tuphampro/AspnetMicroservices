@@ -1,8 +1,10 @@
+using HealthChecks.UI.Client;
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
 using Indentity.API.Data;
 using Indentity.API.Entities;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -33,6 +35,7 @@ namespace Indentity.API
         {
             services.AddDatabaseDeveloperPageExceptionFilter();
             string connectionString = Configuration.GetConnectionString("IdentityServerDB");
+
             //Add EF services to the services container.
             services.AddDbContext<ApplicationDbContext>(options =>
                     options.UseSqlServer(connectionString,
@@ -89,6 +92,8 @@ namespace Indentity.API
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Indentity.API", Version = "v1" });
             });
+
+            services.AddHealthChecks().AddSqlServer(connectionString);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -113,6 +118,11 @@ namespace Indentity.API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHealthChecks("/hc", new HealthCheckOptions()
+                {
+                    Predicate = _ => true,
+                    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                });
             });
         }
 

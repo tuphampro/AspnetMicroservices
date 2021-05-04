@@ -9,6 +9,8 @@ using Ocelot.Cache.CacheManager;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Tokens;
+using WebHost.Customization;
 
 namespace OcelotApiGw
 {
@@ -25,15 +27,20 @@ namespace OcelotApiGw
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCors(options =>
-            {
-                options.AddPolicy("CorsPolicy",
-                    builder => builder
-                    .SetIsOriginAllowed((host) => true)
-                    .AllowAnyMethod()
-                    .AllowAnyHeader()
-                    .AllowCredentials());
-            });
+            services.AddCustomizeCors();
+
+            var authenticationProviderKey = "IdentityApiKey";
+
+            services.AddAuthentication()
+             .AddJwtBearer(authenticationProviderKey, x =>
+             {
+                 x.Authority = Configuration["IdentityUrl"]; // IDENTITY SERVER URL
+                 x.RequireHttpsMetadata = false;
+                 x.TokenValidationParameters = new TokenValidationParameters
+                 {
+                     ValidateAudience = false
+                 };
+             });
 
             services
                 .AddCustomAuthentication(Configuration)

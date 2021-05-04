@@ -39,7 +39,11 @@ namespace Indentity.API
         public static IEnumerable<IdentityResource> IdentityResources => new List<IdentityResource>
             {
                 new IdentityResources.OpenId(),
-                new IdentityResources.Profile()
+                new IdentityResources.Profile(),
+                new IdentityResource(
+                    "roles",
+                    "Your role(s)",
+                    new List<string>() { "role" })
             };
 
         //ApiResources
